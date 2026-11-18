@@ -1,0 +1,14 @@
+{
+  "Lab": "lab1",
+  "GuestAddress": "192.0.2.10",
+  "SshPort": 22,
+  "AdminAccount": "<guest-admin>",
+  "UserAccount": "<guest-user>",
+  "AdminKeyPath": "~/.ssh/hvlab_admin_ed25519",
+  "UserKeyPath": "~/.ssh/hvlab_user_ed25519",
+  "KnownHostsPath": "~/.ssh/hvlab_known_hosts",
+  "ConnectTimeoutSec": 10,
+  "KdnetPort": 50000,
+  "KdnetKeyFile": "",
+  "DumpDirectory": "~/hvlab-dumps"
+}

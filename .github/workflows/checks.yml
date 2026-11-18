@@ -1,0 +1,42 @@
+# Runs the offline checks of this repository in Windows PowerShell 5.1 and in
+# PowerShell 7 on a GitHub-hosted Windows runner. The checks contact no VM,
+# use no secret, and fail when PSScriptAnalyzer or Pester is missing.
+name: checks
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: windows-latest
+    env:
+      # The runner image has its own copies of both modules. The checks load
+      # exactly these versions, which the steps below install.
+      ANALYZER_VERSION: '1.25.0'
+      PESTER_VERSION: '5.9.0'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Install PSScriptAnalyzer and Pester 5 for Windows PowerShell
+        shell: powershell
+        run: |
+          Install-Module -Name PSScriptAnalyzer -RequiredVersion $env:ANALYZER_VERSION -Scope CurrentUser -Force
+          Install-Module -Name Pester -RequiredVersion $env:PESTER_VERSION -Scope CurrentUser -Force -SkipPublisherCheck
+
+      - name: Checks in Windows PowerShell 5.1
+        shell: powershell
+        run: powershell.exe -NoProfile -ExecutionPolicy RemoteSigned -File tests\Invoke-HvLabChecks.ps1 -RequireAnalyzer -AnalyzerVersion $env:ANALYZER_VERSION -PesterVersion $env:PESTER_VERSION
+
+      - name: Install PSScriptAnalyzer and Pester 5 for PowerShell 7
+        shell: pwsh
+        run: |
+          Install-Module -Name PSScriptAnalyzer -RequiredVersion $env:ANALYZER_VERSION -Scope CurrentUser -Force
+          Install-Module -Name Pester -RequiredVersion $env:PESTER_VERSION -Scope CurrentUser -Force -SkipPublisherCheck
+
+      - name: Checks in PowerShell 7
+        shell: pwsh
+        run: pwsh -NoProfile -File tests/Invoke-HvLabChecks.ps1 -RequireAnalyzer -AnalyzerVersion $env:ANALYZER_VERSION -PesterVersion $env:PESTER_VERSION
